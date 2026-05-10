@@ -2,7 +2,7 @@ import streamlit as st
 from google import genai
 
 # Setup client
-client = genai.Client(api_key="AIzaSyCSElHmYeDKEh0EF-msGmwsIN5eW35UISE")
+client = genai.Client(api_key="AIzaSyAyQAUL7CXOOhz8I4U7M_eV_WSQCvhbrhk")
 
 # List of zodiac signs
 zodiac_signs = [
