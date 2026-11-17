@@ -1,222 +1,165 @@
-import datetime
 import streamlit as st
 from google import genai
+import datetime
 
-# Setup client
-client = genai.Client(api_key="AIzaSyA94b7VQI_kKdXVfPH7QvWahUlnUd7e6lQ")
+# Configure the Streamlit page
+st.set_page_config(page_title="Cosmic Guide ✨", page_icon="🔮", layout="centered")
 
-# List of zodiac signs
-zodiac_signs = [
-    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-]
-
-zodiac_data = {
-    "Aries": {"emoji": "♈", "element": "Fire", "modality": "Cardinal", "planet": "Mars", "lucky_color": "Red", "lucky_number": "9", "power_phrase": "I lead with fearless energy.", "daily_vibe": "Bold action creates momentum today."},
-    "Taurus": {"emoji": "♉", "element": "Earth", "modality": "Fixed", "planet": "Venus", "lucky_color": "Green", "lucky_number": "6", "power_phrase": "I build comfort with patience.", "daily_vibe": "A steady approach brings beauty and reward."},
-    "Gemini": {"emoji": "♊", "element": "Air", "modality": "Mutable", "planet": "Mercury", "lucky_color": "Yellow", "lucky_number": "5", "power_phrase": "I connect ideas with curiosity.", "daily_vibe": "Conversation opens new possibilities."},
-    "Cancer": {"emoji": "♋", "element": "Water", "modality": "Cardinal", "planet": "Moon", "lucky_color": "Silver", "lucky_number": "2", "power_phrase": "I nurture with intuition.", "daily_vibe": "Emotional clarity leads the way."},
-    "Leo": {"emoji": "♌", "element": "Fire", "modality": "Fixed", "planet": "Sun", "lucky_color": "Gold", "lucky_number": "1", "power_phrase": "I shine with confidence.", "daily_vibe": "Your charisma attracts positive attention."},
-    "Virgo": {"emoji": "♍", "element": "Earth", "modality": "Mutable", "planet": "Mercury", "lucky_color": "Navy", "lucky_number": "5", "power_phrase": "I organize with focus.", "daily_vibe": "Small improvements lead to big wins."},
-    "Libra": {"emoji": "♎", "element": "Air", "modality": "Cardinal", "planet": "Venus", "lucky_color": "Blue", "lucky_number": "7", "power_phrase": "I balance beauty and kindness.", "daily_vibe": "Harmony and connection feel strong."},
-    "Scorpio": {"emoji": "♏", "element": "Water", "modality": "Fixed", "planet": "Pluto", "lucky_color": "Black", "lucky_number": "8", "power_phrase": "I transform with depth.", "daily_vibe": "Your intuition reveals hidden power."},
-    "Sagittarius": {"emoji": "♐", "element": "Fire", "modality": "Mutable", "planet": "Jupiter", "lucky_color": "Purple", "lucky_number": "3", "power_phrase": "I explore with optimism.", "daily_vibe": "Adventure and growth are aligned."},
-    "Capricorn": {"emoji": "♑", "element": "Earth", "modality": "Cardinal", "planet": "Saturn", "lucky_color": "Brown", "lucky_number": "4", "power_phrase": "I achieve with discipline.", "daily_vibe": "Steady progress wins the day."},
-    "Aquarius": {"emoji": "♒", "element": "Air", "modality": "Fixed", "planet": "Uranus", "lucky_color": "Teal", "lucky_number": "11", "power_phrase": "I innovate with vision.", "daily_vibe": "Your ideas can inspire others."},
-    "Pisces": {"emoji": "♓", "element": "Water", "modality": "Mutable", "planet": "Neptune", "lucky_color": "Sea green", "lucky_number": "7", "power_phrase": "I dream with compassion.", "daily_vibe": "Creativity flows through your day."}
-}
-
-# Theme options are shown in the left panel instead of the sidebar.
-current_date = datetime.datetime.now().strftime("%A, %B %d, %Y")
-
-# Styling for modes will be applied after the theme selector is rendered.
-
-# Logo and header
-logo_html = """
-<div style='display:flex; align-items:center; gap:18px; margin-bottom:24px;'>
-    <div style='width:80px; height:80px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #facc15, #fb7185 45%, #60a5fa 100%); display:flex; align-items:center; justify-content:center; box-shadow: 0 0 20px rgba(252, 197, 21, 0.35);'>
-        <span style='font-size:34px; color:#111827; font-weight:800;'>✨</span>
-    </div>
-    <div>
-        <h1 style='margin:0; font-size:2.2rem; letter-spacing:0.02em;'>Astrology Chatbot</h1>
-        <p style='margin:6px 0 0; color:#94a3b8;'>Personalized astrology insight for your name, birthdate, and sign.</p>
-    </div>
-</div>
-"""
-st.markdown(logo_html, unsafe_allow_html=True)
-
-# User inputs - Left and Center Layout
-col1, col_main = st.columns([1, 2])
-
-with col1:
-    st.markdown("<p style='font-weight:700; font-size:1.1rem; margin-bottom:12px;'>Your Details</p>", unsafe_allow_html=True)
-    name = st.text_input("Enter your name:")
-    birthdate = st.date_input(
-        "Enter your birthdate:",
-        value=datetime.date.today(),
-        min_value=datetime.date(1900, 1, 1),
-        max_value=datetime.date.today(),
-    )
-    zodiac = st.selectbox("Select your zodiac sign:", zodiac_signs)
-
-with col_main:
-    st.markdown(f"<div class='section-title'>Today: {current_date}</div>", unsafe_allow_html=True)
-    
-    # Zodiac card in center
-    sign_info = zodiac_data.get(zodiac, {})
-    st.markdown(
-        f"""
-        <div class='wow-card'>
-            <div style='display:flex; align-items:center; justify-content:space-between; gap:12px;'>
-                <div>
-                    <div style='font-size:3rem; line-height:1;'>{sign_info.get('emoji', '✨')}</div>
-                </div>
-                <div style='text-align:right;'>
-                    <h2 style='margin:0; font-size:1.8rem;'>{zodiac}</h2>
-                    <div style='color: #94a3b8; margin-top:4px;'>{sign_info.get('element')} • {sign_info.get('modality')} • {sign_info.get('planet')}</div>
-                </div>
-            </div>
-            <div class='sign-summary'>
-                <p style='margin:0 0 10px;'><strong>Lucky Color:</strong> {sign_info.get('lucky_color')} &nbsp; • &nbsp; <strong>Lucky Number:</strong> {sign_info.get('lucky_number')}</p>
-                <p style='margin:0 0 10px;'><strong>Power Phrase:</strong> {sign_info.get('power_phrase')}</p>
-                <p style='margin:0; color: #cbd5e1;'><strong>Daily Vibe:</strong> {sign_info.get('daily_vibe')}</p>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    
-    # Question input in center
-    user_question = st.text_input("Ask your astrology question:")
-    
-    col_btn1, col_btn2 = st.columns(2)
-    with col_btn1:
-        insight_clicked = st.button("Get Astrological Insight", use_container_width=True)
-    with col_btn2:
-        overview_clicked = st.button("Show Sign Overview", use_container_width=True)
-
-# Apply dark mode styling - kept at top for early application
-st.markdown(
-    """
+# Custom CSS for a Colorful Cosmic & Mystical Theme
+st.markdown("""
     <style>
-    [data-testid="stAppViewContainer"], .stApp, .main, .block-container, [data-testid="stSidebar"], [data-testid="stToolbar"] {
-        background-color: #0f172a !important;
-        color: #e2e8f0 !important;
+    /* Main Background Gradient */
+    .stApp {
+        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        color: #f3e5f5;
     }
-    .css-1d391kg, .css-ffhzg2, .css-18e3th9, .css-1lcbmhc {
-        background-color: #0f172a !important;
-        color: #e2e8f0 !important;
+    
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1a103c 0%, #2d1458 100%);
+        border-right: 1px solid #ffd70044;
     }
-    .stButton>button {
-        background-color: #475569 !important;
-        color: #f8fafc !important;
-        border: 1px solid #64748b !important;
+    
+    /* Headers & Titles */
+    h1 {
+        color: #ffd700 !important;
+        text-shadow: 0px 0px 12px rgba(255, 215, 0, 0.5);
+        font-family: 'Georgia', serif;
     }
-    input, textarea, select, .stSelectbox>div>div, .stDateInput>div>div {
-        background-color: #1e293b !important;
-        color: #e2e8f0 !important;
-        border: 1px solid #334155 !important;
+    h2, h3 {
+        color: #e0aaff !important;
     }
-    .stSelectbox>div>div>div, .stSelectbox>div>div>div>div, .stDateInput>div>div>div {
-        background-color: #1e293b !important;
-        color: #e2e8f0 !important;
+    
+    /* Chat Message Containers */
+    [data-testid="stChatMessage"] {
+        background-color: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(224, 170, 255, 0.25);
+        border-radius: 15px;
+        padding: 12px;
+        margin-bottom: 10px;
     }
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] span,
-    [data-testid="stSidebar"] div,
-    [data-testid="stSidebar"] .stMarkdown,
-    [data-testid="stSidebar"] .stText,
-    [data-testid="stSidebar"] .stHeader,
-    [data-testid="stSidebar"] .stCaption,
-    label, .stTextInput>label, .stSelectbox>label, .stDateInput>label, .stRadio>label, .stCheckbox>label, .streamlit-expanderHeader, .css-1xarl3l {
-        color: #e2e8f0 !important;
+    
+    /* Input Fields & Labels */
+    .stTextInput label, .stDateInput label, .stTimeInput label, .stSelectbox label {
+        color: #ffd700 !important;
+        font-weight: bold;
     }
-    ::placeholder {
-        color: #cbd5e1 !important;
-        opacity: 1 !important;
-    }
-    .stSelectbox>div>div, .stMultiSelect>div>div, .stRadio>div, .stCheckbox>div {
-        color: #e2e8f0 !important;
-    }
-    .css-1n76uvr, .css-1q8dd3e, .css-10trblm, .css-16zrtkt {
-        color: #e2e8f0 !important;
-    }
-    .wow-card {
-        border-radius: 28px;
-        background: linear-gradient(180deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95));
-        border: 1px solid rgba(148,163,184,0.18);
-        box-shadow: 0 18px 50px rgba(15,23,42,0.45);
-        padding: 24px;
-    }
-    .section-title {
-        font-size: 26px;
-        font-weight: 700;
-        color: #f8fafc;
-        margin-bottom: 12px;
-    }
-    .star-tag {
-        display: inline-block;
-        padding: 8px 14px;
-        border-radius: 999px;
-        background: rgba(148,163,184,0.18);
-        color: #e2e8f0;
-        font-size: 0.95rem;
-        margin-right: 8px;
-    }
-    .sign-summary {
-        margin-top: 18px;
-        padding: 18px;
-        border-radius: 18px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(148,163,184,0.12);
+    
+    /* Divider Styling */
+    hr {
+        border-color: rgba(255, 215, 0, 0.3);
     }
     </style>
-    """,
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
+st.title("✨ Astrology Chatbot ✨")
+st.markdown("🔮 Ask me anything about your zodiac sign, horoscopes, or cosmic destiny!")
 
-
-if insight_clicked:
-    if not name.strip():
-        st.warning("Please enter your name.")
-    elif not user_question.strip():
-        st.warning("Please enter a question.")
-    else:
-        try:
-            try:
-                birthdate_text = birthdate.strftime('%B %d, %Y')
-            except Exception:
-                st.warning("Please choose a valid birthdate.")
-            else:
-                prompt = (
-                    f"As a knowledgeable astrologer, provide insightful advice or information based on astrology "
-                    f"for {name.strip()}, who was born on {birthdate_text} and has the {zodiac} zodiac sign. "
-                    f"Question: {user_question}"
-                )
-
-                response = client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=prompt,
-                )
-
-                st.markdown("<div class='wow-card' style='margin-top:24px;'><strong style='color:#fbbf24;'>✨ Astrological Insight for " + name.strip() + ":</strong>", unsafe_allow_html=True)
-                st.markdown(f"<p style='color:#e2e8f0;'>{response.text}</p></div>", unsafe_allow_html=True)
-        except Exception as e:
-            st.error(f"❌ Error generating response: {e}")
-
-if overview_clicked:
-    st.markdown(
-        f"""
-        <div class='wow-card' style='margin-top:24px;'>
-            <h3 style='margin-top:0; color:#fbbf24;'>✨ Instant Zodiac Overview</h3>
-            <div class='star-tag'>Element: {sign_info.get('element')}</div>
-            <div class='star-tag'>Modality: {sign_info.get('modality')}</div>
-            <div class='star-tag'>Ruling Planet: {sign_info.get('planet')}</div>
-            <div style='margin-top:18px; color: #94a3b8;'>This sign is driven by strong cosmic themes today. Use your lucky color and power phrase to stay aligned with your higher self.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+# Sidebar for API Key, Personal Details & Clear Button at the bottom
+with st.sidebar:
+    st.header("🔑 API Configuration")
+    api_key = st.text_input(
+        "Enter your Gemini API Key", 
+        type="password", 
+        placeholder="AIzaSy...",
+        help="Paste your Google Gemini API key here. You can replace it anytime if your quota runs out."
     )
+        
+    st.divider()
+    
+    st.header("🌌 Your Cosmic Blueprint")
+    st.markdown("Enter your details for personalized readings:")
+    user_name = st.text_input("Name", placeholder="E.g., Luna")
+    birth_date = st.date_input(
+        "Date of Birth", 
+        value=None, 
+        min_value=datetime.date(1900, 1, 1), 
+        max_value=datetime.date.today()
+    )
+    birth_time = st.time_input("Time of Birth", value=None)
+    birth_location = st.text_input("Place of Birth", placeholder="City, Country")
+    zodiac_sign = st.selectbox(
+        "Sun Sign (Optional)", 
+        options=["", "Aries ♈", "Taurus ♉", "Gemini ♊", "Cancer ♋", "Leo ♌", 
+                 "Virgo ♍", "Libra ♎", "Scorpio ♏", "Sagittarius ♐", 
+                 "Capricorn ♑", "Aquarius ♒", "Pisces ♓"],
+        help="Select your Sun Sign if you know it. Otherwise, leave it blank."
+    )
+    
+    # Placing Clear History neatly at the bottom of the sidebar
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    if st.button("🗑️ Clear Chat History", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
 
+# Initialize chat history in session state
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
+# Display chat messages from history on app rerun
+for message in st.session_state.messages:
+    avatar = "🌟" if message["role"] == "user" else "🔮"
+    with st.chat_message(message["role"], avatar=avatar):
+        st.markdown(message["content"])
+
+# React to user input
+if prompt := st.chat_input("What is your astrological question?"):
+    # Check if API key is entered
+    if not api_key:
+        st.warning("⚠️ Please enter your Gemini API Key in the sidebar first to connect with the cosmos!")
+        st.stop()
+
+    # Display user message in chat message container
+    st.chat_message("user", avatar="🌟").markdown(prompt)
+    st.session_state.messages.append({"role": "user", "content": prompt})
+
+    # System prompt enforcing short 10-point format
+    system_prompt = (
+        "You are a mystical, wise, and knowledgeable astrologer. Answer the user's questions about astrology, "
+        "zodiac signs, horoscopes, and cosmic events.\n"
+        "STRICT FORMATTING RULE: Do NOT write long paragraphs. Always give your entire answer in EXACTLY 10 short, "
+        "easy-to-understand bullet points (1 to 10). Keep each point crisp, clear, and concise (1-2 lines max per point) "
+        "with relevant emojis.\n"
+    )
+    
+    # Add personal details to the system prompt if provided
+    user_context = []
+    if user_name: user_context.append(f"Name: {user_name}")
+    if birth_date: user_context.append(f"Date of Birth: {birth_date.strftime('%B %d, %Y')}")
+    if birth_time: user_context.append(f"Time of Birth: {birth_time.strftime('%I:%M %p')}")
+    if birth_location: user_context.append(f"Place of Birth: {birth_location}")
+    if zodiac_sign: user_context.append(f"Sun Sign: {zodiac_sign}")
+    
+    if user_context:
+        system_prompt += "\nThe user has provided the following personal details:\n"
+        system_prompt += "\n".join(user_context)
+        system_prompt += "\n\nPersonalize the 10 points based on these birth details.\n\n"
+    else:
+        system_prompt += "\n\n"
+
+    conversation_text = system_prompt
+    for msg in st.session_state.messages:
+        role_name = "User" if msg["role"] == "user" else "Astrologer"
+        conversation_text += f"{role_name}: {msg['content']}\n"
+    
+    conversation_text += "Astrologer: "
+
+    with st.chat_message("assistant", avatar="🔮"):
+        message_placeholder = st.empty()
+        
+        try:
+            # Initialize client dynamically using the API key from the sidebar
+            client = genai.Client(api_key=api_key.strip())
+            
+            with st.spinner("Reading the stars..."):
+                response = client.models.generate_content(
+                    model="gemini-2.5-flash", 
+                    contents=conversation_text
+                )
+            response_text = response.text
+            message_placeholder.markdown(response_text)
+            
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": response_text})
+        except Exception as e:
+            st.error(f"🌠 Cosmic connection failed (Check your API Key or Quota): {e}")
